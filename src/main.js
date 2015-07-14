@@ -1,15 +1,25 @@
 /* ImageRazor main */
 
 // Base function.
-var ImageRazor = function() {
-  // Add functionality here.
-  return true;
+var ImageRazor = function (options) {
+  if (!this || this.toString() != '[object Object]') {
+    return new ImageRazor(options);
+  }
+
+  this.init(options);
 };
 
 
-// Version.
-ImageRazor.VERSION = '0.0.0';
+
+ImageRazor.prototype.init = function(options) {
+  options = options || options;
+
+  // define object properties
+  
 
 
-// Export to the root, which is probably `window`.
-root.ImageRazor = ImageRazor;
+
+
+  console.log('hello world');
+
+};

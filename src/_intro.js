@@ -1,3 +1,3 @@
-(function(root, undefined) {
+(function(window, fabric) {
 
   "use strict";
