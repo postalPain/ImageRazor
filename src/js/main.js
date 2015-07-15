@@ -115,7 +115,8 @@ ImageRazor.prototype.canvasAddCropArea = function() {
     height: 200,
     fill: 'green',
     borderColor: 'red',
-    cornerColor: 'red'
+    cornerColor: 'red',
+    restrict: this.getRestrictCropArea()
   });
 
   this.canvas.add(rect);
@@ -124,15 +125,7 @@ ImageRazor.prototype.canvasAddCropArea = function() {
     mtr: false
   });
 
-  rect.on('moving', function() {
-    // TODO add restrinction to move object
-    console.log('rect is moving');
-  });
 
-  rect.on('scaling', function() {
-    // TODO add restrinction to scaling object
-    console.log('rect is scaling');
-  });
 
   this.canvasElements.cropArea = rect;
 }
@@ -162,6 +155,11 @@ ImageRazor.prototype.calcImageSize = function(imgWidth, imgHeight) {
 }
 
 
+ImageRazor.prototype.getRestrictCropArea = function() {
+  return {};
+}
+
+
 
 // Utility method to easily extend objects.
 function extend(b, a) {
@@ -180,6 +178,19 @@ function extend(b, a) {
 
 // Create new fabric object
 fabric.cropArea = fabric.util.createClass(fabric.Rect, {
+  initialize: function(options) {
+    this.callSuper('initialize', options);
+
+    this.on('moving', function() {
+      // TODO add restrinction to move object
+      console.log('rect is moving 11');
+    });
+
+    this.on('scaling', function() {
+      // TODO add restrinction to scaling object
+      console.log('rect is scaling');
+    });
+  },
   _render: function(ctx) {
     // render inherited object
     this.callSuper('_render', ctx);
