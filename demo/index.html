@@ -15,7 +15,7 @@
     <h1>ImageRazor demo</h1>
 
     <!-- begin demo markup -->
-
+    <div id="image-razor"></div>
     <!-- end demo markup -->
 
     <p>See the <a href="http://postalPain.github.io/ImageRazor">project homepage</a>.
@@ -25,10 +25,13 @@
     <script src="./../bower_components/fabric/dist/fabric.js"></script>
     <script src="./../dist/ImageRazor.js"></script>
 
-    <script>
+    <script type="text/javascript">
       /* begin demo script */
 
-      var n = new ImageRazor();
+      var n = new ImageRazor({
+          wrapper: '#image-razor',
+          src: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Benz-velo.jpg'
+      });
 
 
       /* end demo script */

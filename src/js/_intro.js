@@ -1,3 +1,3 @@
-(function(window, fabric) {
+(function(window, document, fabric) {
 
   "use strict";
