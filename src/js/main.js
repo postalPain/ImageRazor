@@ -95,9 +95,8 @@ ImageRazor.prototype.canvasAddImage = function() {
     _this.canvas.add(oImg);
 
     var imgSize = _this.calcImageSize(oImg.width, oImg.height);
-    oImg.setWidth(imgSize.width).setHeight(imgSize.height).center().setCoords();
+    oImg.setWidth(imgSize.width).setHeight(imgSize.height).center().setCoords().moveTo(-1);
     oImg.evented = false;
-
 
 
     _this.canvasElements.image = oImg;
@@ -111,7 +110,31 @@ ImageRazor.prototype.canvasAddImage = function() {
 
 // set cropping area to canvas
 ImageRazor.prototype.canvasAddCropArea = function() {
+  var rect = new fabric.cropArea({
+    width: 200,
+    height: 200,
+    fill: 'green',
+    borderColor: 'red',
+    cornerColor: 'red'
+  });
 
+  this.canvas.add(rect);
+  rect.center().setCoords();
+  rect.setControlsVisibility({
+    mtr: false
+  });
+
+  rect.on('moving', function() {
+    // TODO add restrinction to move object
+    console.log('rect is moving');
+  });
+
+  rect.on('scaling', function() {
+    // TODO add restrinction to scaling object
+    console.log('rect is scaling');
+  });
+
+  this.canvasElements.cropArea = rect;
 }
 
 
@@ -153,3 +176,14 @@ function extend(b, a) {
   }
   return b;
 }
+
+
+// Create new fabric object
+fabric.cropArea = fabric.util.createClass(fabric.Rect, {
+  _render: function(ctx) {
+    // render inherited object
+    this.callSuper('_render', ctx);
+
+
+  }
+});
