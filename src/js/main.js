@@ -15,6 +15,7 @@ ImageRazor.prototype.init = function(options) {
   options = options || options;
 
   // define object properties
+
   
 
 

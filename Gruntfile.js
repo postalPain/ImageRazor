@@ -10,9 +10,9 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
-          'src/_intro.js',
-          'src/main.js',
-          'src/_outro.js'
+          'src/js/_intro.js',
+          'src/js/main.js',
+          'src/js/_outro.js'
         ],
         dest: 'dist/<%= pkg.name.replace(".js", "") %>.js'
       }
@@ -25,6 +25,14 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'dist/<%= pkg.name.replace(".js", "") %>.min.js': ['<%= concat.dist.dest %>']
+        }
+      }
+    },
+
+    sass: {
+      dist: {
+        files: {
+          'dist/imagerazor.css':'src/styles/index.scss'
         }
       }
     },
@@ -46,19 +54,20 @@ module.exports = function(grunt) {
     },
 
     watch: {
-      files: ['src/*.js'],
-      tasks: ['concat', 'jshint', 'qunit']
+      files: ['src/js/*.js', 'src/styles/**/*.scss'],
+      tasks: ['sass', 'concat']
     }
 
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
+  //grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-sass');
 
-  grunt.registerTask('test', ['jshint', 'qunit']);
-  grunt.registerTask('default', ['concat', 'jshint', 'qunit', 'uglify']);
+  grunt.registerTask('test', ['jshint']);
+  grunt.registerTask('default', ['sass', 'concat']);
 
 };

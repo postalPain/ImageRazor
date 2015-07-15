@@ -17,6 +17,14 @@ var ImageRazor = function (options) {
 
 
 ImageRazor.prototype.init = function(options) {
+  options = options || options;
+
+  // define object properties
+
+  
+
+
+
 
   console.log('hello world');
 
