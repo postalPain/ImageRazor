@@ -190,6 +190,7 @@ function extend(b, a) {
 // Create new fabric object
 fabric.cropArea = fabric.util.createClass(fabric.Rect, {
   initialize: function(options) {
+    options.fill = 'rgba(0,0,0,0)';
     this.callSuper('initialize', options);
 
     var restrict = options.restrict;
@@ -220,7 +221,7 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
       });
 
       this.on('scaling', function() {
-        // TODO add restrinction to scaling object
+
         var x1 = this.getLeft(),
           y1 = this.getTop(),
           x2 = x1 + this.getWidth(),
@@ -269,6 +270,53 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
     // render inherited object
     this.callSuper('_render', ctx);
 
+    var coordOffsetLeft = Math.ceil(this.left + this.width / 2) * -1,
+        coordOffsetTop =  Math.ceil(this.top + this.height / 2) * -1;
 
+
+    ctx.save();
+    ctx.translate(coordOffsetLeft, coordOffsetTop);
+
+    // dark shadow
+    //
+    //    x1    x2    x3    x4
+    // y1 +-----+-----+------+
+    //    |\\\\\\\\\\\\\\\\\\|
+    //    |\\\\\\\\\\\\\\\\\\|
+    // y2 +-----+-----+------+
+    //    |\\\\\|     |\\\\\\|
+    //    |\\\\\|     |\\\\\\|
+    // y3 +-----+-----+------+
+    //    |\\\\\\\\\\\\\\\\\\|
+    //    |\\\\\\\\\\\\\\\\\\|
+    // y4 +-----+-----+------+
+
+    var x1 = 0,
+        x2 = this.left,
+        x3 = this.left + this.width,
+        x4 = this.canvas.width,
+        y1 = 0,
+        y2 = this.top,
+        y3 = this.top + this.height,
+        y4 = this.canvas.height;
+
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+
+    // Upper rect
+    ctx.fillRect(x1, y1, x4, y2);
+
+    // Bottom rect
+    ctx.fillRect(x1, y3, x4, y4-y3);
+
+    // Left rect
+    ctx.fillRect(x1, y2, x2-x1, y3-y2);
+
+
+    // Right rect
+    ctx.fillRect(x3, y2, x4-x3, y3-y2);
+
+
+    ctx.restore();
   }
 });
