@@ -82,13 +82,16 @@ ImageRazor.prototype.init = function() {
 
 // set starting position to canvas elements
 ImageRazor.prototype.canvasAddElements = function() {
+  var _this = this;
 
-  this.canvasAddImage();
-  this.canvasAddCropArea();
+  this.canvasAddImage(function() {
+    _this.canvasAddCropArea();
+  });
+
 }
 
 // set image to canvas
-ImageRazor.prototype.canvasAddImage = function() {
+ImageRazor.prototype.canvasAddImage = function(callback) {
   var _this = this;
   // set image element
   this.canvasElements.image = new fabric.Image.fromURL(this.options.src, function(oImg) {
@@ -100,6 +103,8 @@ ImageRazor.prototype.canvasAddImage = function() {
 
 
     _this.canvasElements.image = oImg;
+
+    callback();
   });
 
 
@@ -156,7 +161,13 @@ ImageRazor.prototype.calcImageSize = function(imgWidth, imgHeight) {
 
 
 ImageRazor.prototype.getRestrictCropArea = function() {
-  return {};
+
+  return {
+    x1: this.canvasElements.image.left,
+    y1: this.canvasElements.image.top,
+    x2: this.canvasElements.image.left + this.canvasElements.image.width,
+    y2: this.canvasElements.image.top + this.canvasElements.image.height
+  }
 }
 
 
@@ -181,15 +192,78 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
   initialize: function(options) {
     this.callSuper('initialize', options);
 
-    this.on('moving', function() {
-      // TODO add restrinction to move object
-      console.log('rect is moving 11');
-    });
+    var restrict = options.restrict;
 
-    this.on('scaling', function() {
-      // TODO add restrinction to scaling object
-      console.log('rect is scaling');
-    });
+    if (restrict) {
+      this.on('moving', function() {
+
+        var x1 = this.getLeft(),
+          y1 = this.getTop(),
+          x2 = x1 + this.getWidth(),
+          y2 = y1 + this.getHeight();
+
+        if (x1 < restrict.x1) {
+          this.setLeft(restrict.x1);
+        }
+
+        if (y1 < restrict.y1) {
+          this.setTop(restrict.y1);
+        }
+
+        if (x2 > restrict.x2) {
+          this.setLeft(restrict.x2 - this.getWidth());
+        }
+
+        if (y2 > restrict.y2) {
+          this.setTop(restrict.y2 - this.getHeight());
+        }
+      });
+
+      this.on('scaling', function() {
+        // TODO add restrinction to scaling object
+        var x1 = this.getLeft(),
+          y1 = this.getTop(),
+          x2 = x1 + this.getWidth(),
+          y2 = y1 + this.getHeight();
+
+
+        this.width = Math.round(this.width * this.scaleX);
+        this.height = Math.round(this.height * this.scaleY);
+        this.scaleX = 1;
+        this.scaleY = 1;
+
+
+
+
+        if (x1 < restrict.x1) {
+          var deltaX = restrict.x1 - x1;
+
+          this.setLeft(restrict.x1);
+          this.setWidth(this.width - deltaX);
+        }
+
+        if (y1 < restrict.y1) {
+          var deltaY = restrict.y1 - y1;
+
+          this.setTop(restrict.y1);
+          this.setHeight(this.height - deltaY);
+        }
+
+        if (x2 > restrict.x2) {
+          var deltaX = x2 - restrict.x2;
+
+          this.setWidth(this.width - deltaX);
+        }
+
+        if (y2 > restrict.y2) {
+          var deltaY = y2 - restrict.y2;
+
+          this.setHeight(this.height - deltaY);
+        }
+      });
+    }
+
+
   },
   _render: function(ctx) {
     // render inherited object
