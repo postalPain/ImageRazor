@@ -10,17 +10,26 @@ var ImageRazor = function (options) {
   options.wrapper = typeof options.wrapper == 'string' ? document.querySelector(options.wrapper) : options.wrapper;
 
   // define default options
-  this.defaults = {
+  var defaults = {
     imageSize: 'asItIs',
     editor: {
       width: 400,
-      height: 300
+      height: 300,
+      backgroundColor: '#000',
+      cropAreaBorderColor: '#A5A5A5',
+      cropAreaBorderWidth: 1,
+      cropAreaBorderDashStep: 7,
+      cropAreaSize: {
+        width: 200,
+        height: 200
+      }
     },
-    saveCallback: function(){},
-    backgroundColor: '#000'
+    saveCallback: function(){}
   };
 
-  this.options = extend(options, this.defaults);
+  options.editor = options.editor || {};
+  options.editor = extend(options.editor, defaults.editor);
+  this.options = extend(options, defaults);
 
   // initialize editor
   this.init();
@@ -63,7 +72,7 @@ ImageRazor.prototype.init = function() {
     selection: false,
     width: this.options.editor.width,
     height: this.options.editor.height,
-    backgroundColor: this.options.backgroundColor
+    backgroundColor: this.options.editor.backgroundColor
   });
 
   this.canvasElements = {
@@ -120,8 +129,10 @@ ImageRazor.prototype.canvasAddImage = function(callback) {
 ImageRazor.prototype.canvasAddCropArea = function() {
   var rect,
     generalSettings = {
-      borderColor: 'red',
-      cornerColor: 'red',
+      borderColor: this.options.editor.cropAreaBorderColor,
+      cornerColor: this.options.editor.cropAreaBorderColor,
+      borderDashStep: this.options.editor.cropAreaBorderDashStep,
+      borderWidth: this.options.editor.cropAreaBorderWidth,
       restrict: this.getRestrictCropArea()
     },
     settings;
@@ -132,12 +143,13 @@ ImageRazor.prototype.canvasAddCropArea = function() {
 
     settings = {
       width: cropArea.width,
-      height: cropArea.height
+      height: cropArea.height,
+      hasControls: false
     }
   } else {
     settings = {
-      width: 200,
-      height: 200
+      width: this.options.editor.cropAreaSize.width,
+      height: this.options.editor.cropAreaSize.height
     }
   }
 
@@ -189,6 +201,9 @@ ImageRazor.prototype.saveToDataURL = function() {
     multiplier = 1;
   }
 
+  // hide crop area
+  this.canvasElements.cropArea.hide();
+
   data = this.canvas.toDataURL({
         left: this.canvasElements.cropArea.left,
         top: this.canvasElements.cropArea.top,
@@ -196,6 +211,9 @@ ImageRazor.prototype.saveToDataURL = function() {
         height: this.canvasElements.cropArea.height,
         multiplier: multiplier
       });
+
+  // restore crop area
+  this.canvasElements.cropArea.show();
 
   this.options.saveCallback(data);
 }
@@ -257,6 +275,7 @@ function extend(b, a) {
 fabric.cropArea = fabric.util.createClass(fabric.Rect, {
   initialize: function(options) {
     options.fill = 'rgba(0,0,0,0)';
+    options.hasBorders = false;
     this.callSuper('initialize', options);
 
     var restrict = options.restrict;
@@ -329,8 +348,6 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
         }
       });
     }
-
-
   },
   _render: function(ctx) {
     // render inherited object
@@ -378,11 +395,58 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
     // Left rect
     ctx.fillRect(x1, y2, x2-x1, y3-y2);
 
-
     // Right rect
     ctx.fillRect(x3, y2, x4-x3, y3-y2);
 
 
+    // draw borders
+    ctx.strokeStyle = this.borderColor;
+    ctx.lineWidth = this.borderWidth;
+
+    ctx.beginPath();
+    this.drawDashLine(x2, y2, x2, y3, ctx);
+    this.drawDashLine(x2, y3, x3, y3, ctx);
+    this.drawDashLine(x3, y3, x3, y2, ctx);
+    this.drawDashLine(x3, y2, x2, y2, ctx);
+    ctx.stroke();
+
+
     ctx.restore();
+  },
+
+  hide: function() {
+    this.set({
+      opacity: 0,
+      selectable: false
+    });
+  },
+
+  show: function() {
+    this.set({
+      opacity: 1,
+      selectable: true
+    });
+  },
+
+  drawDashLine: function(x1, y1, x2, y2, ctx, dashLen) {
+    if (dashLen == undefined) dashLen = this.borderDashStep;
+    ctx.moveTo(x1, y1);
+
+    var dX = x2 - x1;
+    var dY = y2 - y1;
+    var dashes = Math.floor(Math.sqrt(dX * dX + dY * dY) / dashLen);
+    var dashX = dX / dashes;
+    var dashY = dY / dashes;
+
+    var q = 0;
+    while (q++ < dashes) {
+      x1 += dashX;
+      y1 += dashY;
+      ctx[q % 2 == 0 ? 'moveTo' : 'lineTo'](x1, y1);
+    }
+    ctx[q % 2 == 0 ? 'moveTo' : 'lineTo'](x2, y2);
   }
+
+
+
 });
