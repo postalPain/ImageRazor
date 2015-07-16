@@ -11,14 +11,12 @@ var ImageRazor = function (options) {
 
   // define default options
   this.defaults = {
-    image: {
-      width: 400,
-      height: 300
-    },
+    imageSize: 'asItIs',
     editor: {
       width: 400,
       height: 300
     },
+    saveCallback: function(){},
     backgroundColor: '#000'
   };
 
@@ -95,9 +93,14 @@ ImageRazor.prototype.canvasAddImage = function(callback) {
   var _this = this;
   // set image element
   this.canvasElements.image = new fabric.Image.fromURL(this.options.src, function(oImg) {
+    var imgSize;
     _this.canvas.add(oImg);
+    _this.srcImageSize = {
+      width: oImg.width,
+      height: oImg.height
+    };
 
-    var imgSize = _this.calcImageSize(oImg.width, oImg.height);
+    imgSize = _this.calcImageSize(oImg.width, oImg.height);
     oImg.setWidth(imgSize.width).setHeight(imgSize.height).center().setCoords().moveTo(-1);
     oImg.evented = false;
 
@@ -105,7 +108,7 @@ ImageRazor.prototype.canvasAddImage = function(callback) {
     _this.canvasElements.image = oImg;
 
     callback();
-  });
+  }, {crossOrigin: true});
 
 
 
@@ -115,14 +118,32 @@ ImageRazor.prototype.canvasAddImage = function(callback) {
 
 // set cropping area to canvas
 ImageRazor.prototype.canvasAddCropArea = function() {
-  var rect = new fabric.cropArea({
-    width: 200,
-    height: 200,
-    fill: 'green',
-    borderColor: 'red',
-    cornerColor: 'red',
-    restrict: this.getRestrictCropArea()
-  });
+  var rect,
+    generalSettings = {
+      borderColor: 'red',
+      cornerColor: 'red',
+      restrict: this.getRestrictCropArea()
+    },
+    settings;
+
+  // check if we want image with specific size
+  if (typeof this.options.imageSize == 'object') {
+    var cropArea = this.calcCropAreaSize();
+
+    settings = {
+      width: cropArea.width,
+      height: cropArea.height
+    }
+  } else {
+    settings = {
+      width: 200,
+      height: 200
+    }
+  }
+
+  settings = extend(settings, generalSettings);
+
+  rect = new fabric.cropArea(settings);
 
   this.canvas.add(rect);
   rect.center().setCoords();
@@ -134,6 +155,51 @@ ImageRazor.prototype.canvasAddCropArea = function() {
 
   this.canvasElements.cropArea = rect;
 }
+
+
+ImageRazor.prototype.calcCropAreaSize = function() {
+  var width,
+      height;
+
+  if (this.canvasElements.image.width != this.canvas.width) {
+    width = this.canvasElements.image.width;
+    height = Math.round((this.options.imageSize.height / this.options.imageSize.width) * width);
+  } else {
+    height = this.canvasElements.image.height;
+    width = Math.round((this.options.imageSize.width / this.options.imageSize.height) * height);
+  }
+
+  return {
+    width: width,
+    height: height
+  }
+}
+
+
+ImageRazor.prototype.saveToDataURL = function() {
+  var multiplier,
+      data;
+
+  // set multiplier
+  if (typeof this.options.imageSize == 'object') {
+    multiplier = this.options.imageSize.width/this.canvasElements.image.width;
+  } else if (this.options.imageSize == 'original') {
+    multiplier = this.srcImageSize.width/this.canvasElements.image.width;
+  } else {
+    multiplier = 1;
+  }
+
+  data = this.canvas.toDataURL({
+        left: this.canvasElements.cropArea.left,
+        top: this.canvasElements.cropArea.top,
+        width: this.canvasElements.cropArea.width,
+        height: this.canvasElements.cropArea.height,
+        multiplier: multiplier
+      });
+
+  this.options.saveCallback(data);
+}
+
 
 
 ImageRazor.prototype.calcImageSize = function(imgWidth, imgHeight) {

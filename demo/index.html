@@ -16,6 +16,9 @@
 
     <!-- begin demo markup -->
     <div id="image-razor"></div>
+    <div>
+        <img id="image-preview" />
+    </div>
     <!-- end demo markup -->
 
     <p>See the <a href="http://postalPain.github.io/ImageRazor">project homepage</a>.
@@ -30,7 +33,15 @@
 
       var n = new ImageRazor({
           wrapper: '#image-razor',
-          src: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Benz-velo.jpg'
+          src: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Benz-velo.jpg',
+          imageSize: {
+              width: 600,
+              height: 400
+          },
+          saveCallback: function(data) {
+            var preview = document.getElementById('image-preview');
+            preview.src = data;
+          }
       });
 
 
