@@ -75,6 +75,15 @@ ImageRazor.prototype.init = function() {
     backgroundColor: this.options.editor.backgroundColor
   });
 
+
+  // initialize canvas elements
+  this.initCanvasElements();
+
+};
+
+
+// Initialize canvas elements
+ImageRazor.prototype.initCanvasElements = function() {
   this.canvasElements = {
     image: null,
     cropArea: null
@@ -83,8 +92,16 @@ ImageRazor.prototype.init = function() {
 
   // setup Canvas elements
   this.canvasAddElements();
+}
 
-};
+// reset Canvas
+ImageRazor.prototype.canvasReset = function() {
+  // clear Canvas
+  this.canvas.clear();
+
+  // setup canvas elements again
+  this.initCanvasElements();
+}
 
 
 // set starting position to canvas elements
