@@ -56,6 +56,14 @@ ImageRazor.prototype.init = function() {
   // Create toolbox
   var toolsBox = document.createElement('div');
   toolsBox.className = 'image-razor-toolbox';
+
+  // add items to toolbox
+  var toolItem = document.createElement('div');
+  toolItem.className = 'image-razor-toolbox-item';
+  toolItem.setAttribute('data-name', 'save');
+  toolsBox.addEventListener('click', function(e) {console.log(e.target.getAttribute('data-name'))});
+  toolsBox.appendChild(toolItem);
+
   editorBox.appendChild(toolsBox);
 
 
