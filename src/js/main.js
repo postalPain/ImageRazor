@@ -148,7 +148,6 @@ ImageRazor.prototype.canvasAddElements = function() {
   this.canvasAddImage(function() {
     _this.canvasAddCropArea();
   });
-
 }
 
 // set image to canvas
@@ -278,16 +277,19 @@ ImageRazor.prototype.calcImageSize = function(imgWidth, imgHeight) {
   var cWidth = this.canvas.width,
     cHeight = this.canvas.height,
     cRatio = cWidth/cHeight,
-    imgRatio = imgHeight/imgWidth,
+    imgRatio = imgWidth/imgHeight,
     newImgWidth,
     newImgHeight;
 
-  if (cRatio <= 1 && imgRatio <= 1 || cRatio > 1 && imgRatio > 1) {
-    newImgWidth = cWidth;
-    newImgHeight = Math.round(newImgWidth * imgRatio);
-  } else {
-    newImgHeight = cHeight;
-    newImgWidth = Math.round(newImgHeight / imgRatio);
+
+  // first iteration
+  newImgHeight = cHeight * 1;
+  newImgWidth = imgRatio * newImgHeight;
+
+
+  if (newImgWidth > cWidth) {
+    newImgWidth = cWidth * 1;
+    newImgHeight = Math.round(newImgWidth / imgRatio);
   }
 
 
@@ -316,6 +318,8 @@ ImageRazor.prototype.handleToolsBox = function(e) {
   this[handler]();
 }
 
+
+// tools handlers
 ImageRazor.prototype.toolBoxHandlerSave = function() {
   console.log('save');
 }
@@ -330,6 +334,59 @@ ImageRazor.prototype.toolBoxHandlerRotateCCWise = function() {
 }
 ImageRazor.prototype.toolBoxHandlerEffectGrayscale = function() {
   console.log('effect grayscale');
+}
+
+
+// rotate canvas
+ImageRazor.prototype.rotateImage = function(direction) {
+  direction = direction || -1;
+
+
+  var multiplier = this.srcImageSize.width/this.canvasElements.image.width,
+    data;
+
+  // hide crop area
+  this.canvasElements.cropArea.hide();
+
+  data = this.canvas.toDataURL({
+    left: this.canvasElements.image.left,
+    top: this.canvasElements.image.top,
+    width: this.canvasElements.image.width,
+    height: this.canvasElements.image.height,
+    multiplier: multiplier
+  });
+
+  var _this = this,
+      canvas = document.createElement('canvas'),
+      ctx = canvas.getContext("2d"),
+      img = new Image();;
+
+  img.onload = function() {
+    canvas.setAttribute('width', img.height);
+    canvas.setAttribute('height', img.width);
+
+    ctx.translate(canvas.width/2, canvas.height/2);
+    ctx.rotate(90 * direction * Math.PI/180);
+
+    ctx.drawImage(img, -img.width/2, -img.height/2);
+
+    var exportData = canvas.toDataURL();
+    _this.options.src = exportData;
+
+    // clear canvas
+    _this.canvas.clear();
+
+    // re-init canvas elements
+    _this.initCanvasElements();
+
+  };
+
+  img.src = data;
+
+
+
+
+
 }
 
 
