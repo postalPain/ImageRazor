@@ -44,7 +44,8 @@ var ImageRazor = function (options) {
 
 ImageRazor.prototype.init = function() {
   // Init DOM elements
-  var wrapper = this.options.wrapper;
+  var wrapper = this.options.wrapper,
+    _this = this;
 
   // Create splashscreen element
   var editorSplashscreen = document.createElement('div');
@@ -61,12 +62,40 @@ ImageRazor.prototype.init = function() {
   // Create toolbox
   var toolsBox = document.createElement('div');
   toolsBox.className = 'image-razor-toolbox';
+  toolsBox.addEventListener('click', function(e) {
+    _this.handleToolsBox(e);
+  });
 
   // add items to toolbox
+
+  // save toolbox item
   var toolItem = document.createElement('div');
   toolItem.className = 'image-razor-toolbox-item';
-  toolItem.setAttribute('data-name', 'save');
-  toolsBox.addEventListener('click', function(e) {console.log(e.target.getAttribute('data-name'))});
+  toolItem.setAttribute('data-name', 'Save');
+  toolsBox.appendChild(toolItem);
+
+  // close toolbox item
+  var toolItem = document.createElement('div');
+  toolItem.className = 'image-razor-toolbox-item';
+  toolItem.setAttribute('data-name', 'Close');
+  toolsBox.appendChild(toolItem);
+
+  // rotate clockwise toolbox item
+  var toolItem = document.createElement('div');
+  toolItem.className = 'image-razor-toolbox-item';
+  toolItem.setAttribute('data-name', 'RotateCWise');
+  toolsBox.appendChild(toolItem);
+
+  // rotate counter clockwise toolbox item
+  var toolItem = document.createElement('div');
+  toolItem.className = 'image-razor-toolbox-item';
+  toolItem.setAttribute('data-name', 'RotateCCWise');
+  toolsBox.appendChild(toolItem);
+
+  // effect gray-scale toolbox item
+  var toolItem = document.createElement('div');
+  toolItem.className = 'image-razor-toolbox-item';
+  toolItem.setAttribute('data-name', 'EffectGrayscale');
   toolsBox.appendChild(toolItem);
 
   editorBox.appendChild(toolsBox);
@@ -282,6 +311,30 @@ ImageRazor.prototype.getRestrictCropArea = function() {
     x2: this.canvasElements.image.left + this.canvasElements.image.width,
     y2: this.canvasElements.image.top + this.canvasElements.image.height
   }
+}
+
+
+ImageRazor.prototype.handleToolsBox = function(e) {
+  var name = e.target.getAttribute('data-name'),
+      handler = 'toolBoxHandler' + name;
+
+  this[handler]();
+}
+
+ImageRazor.prototype.toolBoxHandlerSave = function() {
+  console.log('save');
+}
+ImageRazor.prototype.toolBoxHandlerClose = function() {
+  console.log('close');
+}
+ImageRazor.prototype.toolBoxHandlerRotateCWise = function() {
+  console.log('rotate clock wise');
+}
+ImageRazor.prototype.toolBoxHandlerRotateCCWise = function() {
+  console.log('rotate counter clock wise');
+}
+ImageRazor.prototype.toolBoxHandlerEffectGrayscale = function() {
+  console.log('effect grayscale');
 }
 
 
