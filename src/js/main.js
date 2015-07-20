@@ -318,22 +318,42 @@ ImageRazor.prototype.handleToolsBox = function(e) {
   this[handler]();
 }
 
+// close Image Razor
+ImageRazor.prototype.close = function() {
+  var node = this.options.wrapper;
+
+  // remove all elements of the editor
+  while(node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
+};
+
 
 // tools handlers
 ImageRazor.prototype.toolBoxHandlerSave = function() {
-  console.log('save');
+  this.saveToDataURL();
+  this.close();
 }
 ImageRazor.prototype.toolBoxHandlerClose = function() {
-  console.log('close');
+  this.close();
 }
 ImageRazor.prototype.toolBoxHandlerRotateCWise = function() {
-  console.log('rotate clock wise');
+  this.rotateImage(-1);
 }
 ImageRazor.prototype.toolBoxHandlerRotateCCWise = function() {
-  console.log('rotate counter clock wise');
+  this.rotateImage(1);
 }
 ImageRazor.prototype.toolBoxHandlerEffectGrayscale = function() {
-  console.log('effect grayscale');
+
+  // add filter
+  if (this.canvasElements.image.filters.length == 0) {
+    this.canvasElements.image.filters.push(new fabric.Image.filters.Grayscale());
+  } else {
+    this.canvasElements.image.filters.pop();
+  }
+
+  // apply filters and re-render canvas when done
+  this.canvasElements.image.applyFilters(this.canvas.renderAll.bind(this.canvas));
 }
 
 
@@ -342,8 +362,7 @@ ImageRazor.prototype.rotateImage = function(direction) {
   direction = direction || -1;
 
 
-  var multiplier = this.srcImageSize.width/this.canvasElements.image.width,
-    data;
+  var data;
 
   // hide crop area
   this.canvasElements.cropArea.hide();
@@ -353,7 +372,7 @@ ImageRazor.prototype.rotateImage = function(direction) {
     top: this.canvasElements.image.top,
     width: this.canvasElements.image.width,
     height: this.canvasElements.image.height,
-    multiplier: multiplier
+    multiplier: this.srcImageSize.width/this.canvasElements.image.width
   });
 
   var _this = this,
@@ -382,11 +401,6 @@ ImageRazor.prototype.rotateImage = function(direction) {
   };
 
   img.src = data;
-
-
-
-
-
 }
 
 

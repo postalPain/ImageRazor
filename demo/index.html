@@ -19,6 +19,7 @@
     <div>
         <img id="image-preview" />
     </div>
+    <a id="image-razor-caller">Call Image Razor</a>
     <!-- end demo markup -->
 
     <p>See the <a href="http://postalPain.github.io/ImageRazor">project homepage</a>.
@@ -31,18 +32,23 @@
     <script type="text/javascript">
       /* begin demo script */
 
-      var n = new ImageRazor({
-          wrapper: '#image-razor',
-          src: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Benz-velo.jpg',
-          imageSize: {
-              width: 600,
-              height: 400
-          },
-          saveCallback: function(data) {
-            var preview = document.getElementById('image-preview');
-            preview.src = data;
-          }
+      document.getElementById('image-razor-caller').addEventListener('click', function() {
+          var n = new ImageRazor({
+              wrapper: '#image-razor',
+              src: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Benz-velo.jpg',
+              imageSize: {
+                  width: 600,
+                  height: 400
+              },
+              saveCallback: function(data) {
+                  var preview = document.getElementById('image-preview');
+                  preview.src = data;
+                  delete window.n;
+              }
+          });
       });
+
+
 
 
       /* end demo script */
