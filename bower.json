@@ -1,7 +1,17 @@
 {
   "name": "ImageRazor",
-  "version": "0.0.0",
-  "main": "dist/ImageRazor.min.js",
+  "version": "0.0.1",
+  "main": [
+    "dist/ImageRazor.min.js",
+    "dist/styles/imagerazor.min.css"
+  ],
+  "description": "Image editor, based on FabricJS library. Main  ",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/postalPain/ImageRazor.git"
+  },
+  "keywords": [],
+  "author": "Pavel Lapin <postalpain@gmail.com>",
   "ignore": [
     "**/.*",
     "node_modules",

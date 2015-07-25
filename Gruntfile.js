@@ -37,6 +37,14 @@ module.exports = function(grunt) {
       }
     },
 
+    cssmin: {
+      target: {
+        files: {
+          'dist/styles/imagerazor.min.css': 'dist/styles/imagerazor.css'
+        }
+      }
+    },
+
     copy: {
       dist: {
         files: [
@@ -87,9 +95,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('default', ['copy', 'sass', 'concat']);
+  grunt.registerTask('build', ['copy', 'sass', 'cssmin', 'concat', 'uglify']);
 
 };
