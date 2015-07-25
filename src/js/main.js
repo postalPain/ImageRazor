@@ -24,7 +24,9 @@ var ImageRazor = function (options) {
         height: 200
       }
     },
-    saveCallback: function(){}
+    format: 'dataURL',
+    saveCallback: function(){},
+    closeCallback: function(){}
   };
 
   options.editor = options.editor || {};
@@ -270,7 +272,7 @@ ImageRazor.prototype.saveToDataURL = function() {
   // restore crop area
   this.canvasElements.cropArea.show();
 
-  this.options.saveCallback(data);
+  return data;
 }
 
 
@@ -322,19 +324,26 @@ ImageRazor.prototype.handleToolsBox = function(e) {
 
 // close Image Razor
 ImageRazor.prototype.close = function() {
+  this.destroy();
+  this.options.closeCallback();
+};
+
+// destroy Image Razor DOM Elements
+ImageRazor.prototype.destroy = function() {
   var node = this.options.wrapper;
 
   // remove all elements of the editor
   while(node.firstChild) {
     node.removeChild(node.firstChild);
   }
-};
+}
 
 
 // tools handlers
 ImageRazor.prototype.toolBoxHandlerSave = function() {
-  this.saveToDataURL();
-  this.close();
+  var data = this.saveToDataURL();
+  this.options.saveCallback(data);
+  this.destroy();
 }
 ImageRazor.prototype.toolBoxHandlerClose = function() {
   this.close();
