@@ -56,6 +56,7 @@ ImageRazor.prototype.init = function() {
   // Create editor box
   var editorBox = document.createElement('div');
   editorBox.className = 'image-razor-box';
+  editorBox.setAttribute('style', 'width: ' + this.options.editor.width + 'px');
   wrapper.appendChild(editorBox);
 
 
@@ -68,35 +69,36 @@ ImageRazor.prototype.init = function() {
 
   // add items to toolbox
 
-  // save toolbox item
+  // rotate counter clockwise toolbox item
   var toolItem = document.createElement('div');
-  toolItem.className = 'image-razor-toolbox-item';
-  toolItem.setAttribute('data-name', 'Save');
-  toolsBox.appendChild(toolItem);
-
-  // close toolbox item
-  var toolItem = document.createElement('div');
-  toolItem.className = 'image-razor-toolbox-item';
-  toolItem.setAttribute('data-name', 'Close');
+  toolItem.className = 'image-razor-toolbox-item icon-rotate-ccw';
+  toolItem.setAttribute('data-name', 'RotateCCWise');
   toolsBox.appendChild(toolItem);
 
   // rotate clockwise toolbox item
   var toolItem = document.createElement('div');
-  toolItem.className = 'image-razor-toolbox-item';
+  toolItem.className = 'image-razor-toolbox-item icon-rotate-cw';
   toolItem.setAttribute('data-name', 'RotateCWise');
-  toolsBox.appendChild(toolItem);
-
-  // rotate counter clockwise toolbox item
-  var toolItem = document.createElement('div');
-  toolItem.className = 'image-razor-toolbox-item';
-  toolItem.setAttribute('data-name', 'RotateCCWise');
   toolsBox.appendChild(toolItem);
 
   // effect gray-scale toolbox item
   var toolItem = document.createElement('div');
-  toolItem.className = 'image-razor-toolbox-item';
+  toolItem.className = 'image-razor-toolbox-item icon-eye';
   toolItem.setAttribute('data-name', 'EffectGrayscale');
   toolsBox.appendChild(toolItem);
+
+  // close toolbox item
+  var toolItem = document.createElement('div');
+  toolItem.className = 'image-razor-toolbox-item icon-cancel';
+  toolItem.setAttribute('data-name', 'Close');
+  toolsBox.appendChild(toolItem);
+
+  // save toolbox item
+  var toolItem = document.createElement('div');
+  toolItem.className = 'image-razor-toolbox-item icon-done';
+  toolItem.setAttribute('data-name', 'Save');
+  toolsBox.appendChild(toolItem);
+
 
   editorBox.appendChild(toolsBox);
 
@@ -343,10 +345,10 @@ ImageRazor.prototype.toolBoxHandlerClose = function() {
   this.close();
 }
 ImageRazor.prototype.toolBoxHandlerRotateCWise = function() {
-  this.rotateImage(-1);
+  this.rotateImage(1);
 }
 ImageRazor.prototype.toolBoxHandlerRotateCCWise = function() {
-  this.rotateImage(1);
+  this.rotateImage(-1);
 }
 ImageRazor.prototype.toolBoxHandlerEffectGrayscale = function() {
 

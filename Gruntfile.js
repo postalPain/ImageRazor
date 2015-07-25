@@ -32,8 +32,29 @@ module.exports = function(grunt) {
     sass: {
       dist: {
         files: {
-          'dist/imagerazor.css':'src/styles/index.scss'
+          'dist/styles/imagerazor.css':'src/styles/index.scss'
         }
+      }
+    },
+
+    copy: {
+      dist: {
+        files: [
+          {
+            expand: true,
+            cwd: 'src/',
+            src: ['images/*.*'],
+            dest: 'dist/'
+
+          },
+          {
+            expand: true,
+            cwd: 'src/',
+            src: ['fonts/*.*'],
+            dest: 'dist/'
+
+          }
+        ]
       }
     },
 
@@ -66,8 +87,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('default', ['sass', 'concat']);
+  grunt.registerTask('default', ['copy', 'sass', 'concat']);
 
 };

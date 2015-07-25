@@ -4,7 +4,7 @@
     <title>ImageRazor demo</title>
     <link rel="stylesheet" href="./assets/normalize.css" />
     <link rel="stylesheet" href="./assets/main.css" />
-    <link rel="stylesheet" href="./../dist/imagerazor.css" />
+    <link rel="stylesheet" href="./../dist/styles/imagerazor.css" />
     <style>
       /* begin demo embedded styles */
 
@@ -32,7 +32,9 @@
     <script type="text/javascript">
       /* begin demo script */
 
-      document.getElementById('image-razor-caller').addEventListener('click', function() {
+      var button = document.getElementById('image-razor-caller'),
+          body = document.getElementsByTagName('body')[0];
+      button.addEventListener('click', function() {
           var n = new ImageRazor({
               wrapper: '#image-razor',
               src: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Benz-velo.jpg',
@@ -46,9 +48,11 @@
                   delete window.n;
               }
           });
+
+          body.removeChild(button);
       });
 
-
+      //button.click();
 
 
       /* end demo script */

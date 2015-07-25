@@ -3,18 +3,16 @@
  * Author: Pavel Lapin
  */
 
-/* === resets === */
-
-/* === defaults === */
-
-/* === generic styles */
-
-/* === layout === */
-
-/* === modules === */
-
-/* === specific styles */
-
-/* === subsections === */
-
-/* === hacks / overrides === */
+#image-razor-caller {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background: #000;
+    color: #fff;
+    font-size: 18px;
+    line-height: 20px;
+}
+#image-razor-caller:hover {
+    background: #3c3c3c;
+    cursor: pointer;
+}

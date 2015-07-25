@@ -1,7 +1,53 @@
+@import "_icons.scss";
+
+
+.image-razor-toolbox {
+  margin-bottom: 5px;
+  padding: 0;
+  border-radius: 3px;
+  background: rgb(70, 70, 70);
+
+  &:after {
+    content: '.';
+    display: block;
+    clear: both;
+    height: 0;
+    overflow: hidden;
+    font-size: 1px;
+  }
+}
+
 .image-razor-toolbox-item {
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin: 0 5px 0 0;
-  background: green;
+  padding: 5px;
+  margin: 0 1px 0 0;
+  font-size: 20px;
+  line-height: 20px;
+  color: #fff;
+
+  &:first-child {
+    border-radius: 3px 0 0 3px;
+  }
+
+  &:hover {
+    background: #0f0f0f;
+    cursor: pointer;
+  }
+
+  &.icon-eye {
+    color: #939393;
+  }
+
+  &.icon-done {
+    color: #008000;
+    float: right;
+    margin: 0 0 0 1px;
+  }
+
+  &.icon-cancel {
+    color: #c61f1e;
+    float: right;
+    margin: 0 0 0 1px;
+    border-radius: 0 3px 3px 0;
+  }
 }
