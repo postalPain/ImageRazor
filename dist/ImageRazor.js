@@ -29,7 +29,9 @@ var ImageRazor = function (options) {
         height: 200
       }
     },
-    saveCallback: function(){}
+    format: 'dataURL',
+    saveCallback: function(){},
+    closeCallback: function(){}
   };
 
   options.editor = options.editor || {};
@@ -275,8 +277,26 @@ ImageRazor.prototype.saveToDataURL = function() {
   // restore crop area
   this.canvasElements.cropArea.show();
 
-  this.options.saveCallback(data);
+  return data;
 }
+
+ImageRazor.prototype.saveToBlob = function() {
+  var dataURL = this.saveToDataURL(),
+      byteString = atob(dataURL.split(',')[1]),
+      mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0],
+      ab = new ArrayBuffer(byteString.length),
+      ia = new Uint8Array(ab);
+
+
+
+  // write the bytes of the string to an ArrayBuffer
+  for (var i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+
+  // create Blob object from binary array
+  return new Blob(ia, {type:mimeString});
+};
 
 
 
@@ -327,19 +347,34 @@ ImageRazor.prototype.handleToolsBox = function(e) {
 
 // close Image Razor
 ImageRazor.prototype.close = function() {
+  this.destroy();
+  this.options.closeCallback();
+};
+
+// destroy Image Razor DOM Elements
+ImageRazor.prototype.destroy = function() {
   var node = this.options.wrapper;
 
   // remove all elements of the editor
   while(node.firstChild) {
     node.removeChild(node.firstChild);
   }
-};
+}
 
 
 // tools handlers
 ImageRazor.prototype.toolBoxHandlerSave = function() {
-  this.saveToDataURL();
-  this.close();
+  var data;
+
+  // check in which format return image
+  if (this.options.format == 'blob') {
+    data = this.saveToBlob();
+  } else {
+    data = this.saveToDataURL();
+  }
+
+  this.options.saveCallback(data);
+  this.destroy();
 }
 ImageRazor.prototype.toolBoxHandlerClose = function() {
   this.close();

@@ -43,10 +43,13 @@
                   height: 400
               },
               saveCallback: function(data) {
-                  var preview = document.getElementById('image-preview');
-                  preview.src = data;
-                  delete window.n;
-              }
+                  //var preview = document.getElementById('image-preview');
+                  //preview.src = data;
+                  //delete window.n;
+
+                  console.log(data);
+              },
+              format: 'blob'
           });
 
           body.removeChild(button);

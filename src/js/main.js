@@ -275,6 +275,24 @@ ImageRazor.prototype.saveToDataURL = function() {
   return data;
 }
 
+ImageRazor.prototype.saveToBlob = function() {
+  var dataURL = this.saveToDataURL(),
+      byteString = atob(dataURL.split(',')[1]),
+      mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0],
+      ab = new ArrayBuffer(byteString.length),
+      ia = new Uint8Array(ab);
+
+
+
+  // write the bytes of the string to an ArrayBuffer
+  for (var i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+
+  // create Blob object from binary array
+  return new Blob(ia, {type:mimeString});
+};
+
 
 
 ImageRazor.prototype.calcImageSize = function(imgWidth, imgHeight) {
@@ -341,7 +359,15 @@ ImageRazor.prototype.destroy = function() {
 
 // tools handlers
 ImageRazor.prototype.toolBoxHandlerSave = function() {
-  var data = this.saveToDataURL();
+  var data;
+
+  // check in which format return image
+  if (this.options.format == 'blob') {
+    data = this.saveToBlob();
+  } else {
+    data = this.saveToDataURL();
+  }
+
   this.options.saveCallback(data);
   this.destroy();
 }
