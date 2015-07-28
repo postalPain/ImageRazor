@@ -118,13 +118,6 @@ ImageRazor.prototype.init = function() {
 
 
   // initialize canvas elements
-  this.initCanvasElements();
-
-};
-
-
-// Initialize canvas elements
-ImageRazor.prototype.initCanvasElements = function() {
   this.canvasElements = {
     image: null,
     cropArea: null
@@ -133,16 +126,8 @@ ImageRazor.prototype.initCanvasElements = function() {
 
   // setup Canvas elements
   this.canvasAddElements();
-}
 
-// reset Canvas
-ImageRazor.prototype.canvasReset = function() {
-  // clear Canvas
-  this.canvas.clear();
-
-  // setup canvas elements again
-  this.initCanvasElements();
-}
+};
 
 
 // set starting position to canvas elements
@@ -171,11 +156,8 @@ ImageRazor.prototype.canvasAddImage = function(callback) {
     callback();
   }, {crossOrigin: true});
 
-
-
-
-
 }
+
 
 // set cropping area to canvas
 ImageRazor.prototype.canvasAddCropArea = function() {
@@ -234,7 +216,7 @@ ImageRazor.prototype.calcCropAreaSize = function() {
     height = imgHeightOnCanvas;
     width = Math.round((this.options.imageSize.width / this.options.imageSize.height) * height);
   }
-
+console.log(width, height);
   return {
     width: width,
     height: height
@@ -294,7 +276,6 @@ ImageRazor.prototype.saveToBlob = function() {
 ImageRazor.prototype.getImageScale = function(imgWidth, imgHeight) {
   var cWidth  = this.canvas.width,
       cHeight = this.canvas.height,
-      cRatio  = cWidth/cHeight,
       imgRatio = imgWidth/imgHeight,
       newImgWidth,
       newImgHeight;
@@ -310,10 +291,9 @@ ImageRazor.prototype.getImageScale = function(imgWidth, imgHeight) {
     newImgHeight = Math.round(newImgWidth / imgRatio);
   }
 
-
   return {
     x: newImgWidth/imgWidth,
-    y:newImgHeight/imgHeight
+    y: newImgHeight/imgHeight
   };
 }
 
