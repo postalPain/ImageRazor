@@ -43,19 +43,16 @@
                   height: 400
               },
               saveCallback: function(data) {
-                  //var preview = document.getElementById('image-preview');
-                  //preview.src = data;
-                  //delete window.n;
-
-                  console.log(data);
-              },
-              format: 'blob'
+                  var preview = document.getElementById('image-preview');
+                  preview.src = data;
+                  delete window.n;
+              }
           });
 
           body.removeChild(button);
       });
 
-      //button.click();
+      button.click();
 
 
       /* end demo script */

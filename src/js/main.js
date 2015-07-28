@@ -159,15 +159,10 @@ ImageRazor.prototype.canvasAddImage = function(callback) {
   var _this = this;
   // set image element
   this.canvasElements.image = new fabric.Image.fromURL(this.options.src, function(oImg) {
-    var imgSize;
+    var scale = _this.getImageScale(oImg.width, oImg.height);
     _this.canvas.add(oImg);
-    _this.srcImageSize = {
-      width: oImg.width,
-      height: oImg.height
-    };
 
-    imgSize = _this.calcImageSize(oImg.width, oImg.height);
-    oImg.setWidth(imgSize.width).setHeight(imgSize.height).center().setCoords().moveTo(-1);
+    oImg.setScaleX(scale.x).setScaleY(scale.y).center().setCoords().moveTo(-1);
     oImg.evented = false;
 
 
@@ -227,14 +222,16 @@ ImageRazor.prototype.canvasAddCropArea = function() {
 
 
 ImageRazor.prototype.calcCropAreaSize = function() {
-  var width,
+  var imgWidthOnCanvas = this.canvasElements.image.getBoundingRect().width,
+      imgHeightOnCanvas = this.canvasElements.image.getBoundingRect().height,
+      width,
       height;
 
-  if (this.canvasElements.image.width != this.canvas.width) {
-    width = this.canvasElements.image.width;
+  if (imgWidthOnCanvas != this.canvas.width) {
+    width = imgWidthOnCanvas;
     height = Math.round((this.options.imageSize.height / this.options.imageSize.width) * width);
   } else {
-    height = this.canvasElements.image.height;
+    height = imgHeightOnCanvas;
     width = Math.round((this.options.imageSize.width / this.options.imageSize.height) * height);
   }
 
@@ -251,9 +248,9 @@ ImageRazor.prototype.saveToDataURL = function() {
 
   // set multiplier
   if (typeof this.options.imageSize == 'object') {
-    multiplier = this.options.imageSize.width/this.canvasElements.image.width;
+    multiplier = this.options.imageSize.width/this.canvasElements.image.getBoundingRect().width;
   } else if (this.options.imageSize == 'original') {
-    multiplier = this.srcImageSize.width/this.canvasElements.image.width;
+    multiplier = this.canvasElements.image.getScaleX();
   } else {
     multiplier = 1;
   }
@@ -294,14 +291,13 @@ ImageRazor.prototype.saveToBlob = function() {
 };
 
 
-
-ImageRazor.prototype.calcImageSize = function(imgWidth, imgHeight) {
-  var cWidth = this.canvas.width,
-    cHeight = this.canvas.height,
-    cRatio = cWidth/cHeight,
-    imgRatio = imgWidth/imgHeight,
-    newImgWidth,
-    newImgHeight;
+ImageRazor.prototype.getImageScale = function(imgWidth, imgHeight) {
+  var cWidth  = this.canvas.width,
+      cHeight = this.canvas.height,
+      cRatio  = cWidth/cHeight,
+      imgRatio = imgWidth/imgHeight,
+      newImgWidth,
+      newImgHeight;
 
 
   // first iteration
@@ -316,19 +312,18 @@ ImageRazor.prototype.calcImageSize = function(imgWidth, imgHeight) {
 
 
   return {
-    width: newImgWidth,
-    height:newImgHeight
+    x: newImgWidth/imgWidth,
+    y:newImgHeight/imgHeight
   };
 }
-
 
 ImageRazor.prototype.getRestrictCropArea = function() {
 
   return {
-    x1: this.canvasElements.image.left,
-    y1: this.canvasElements.image.top,
-    x2: this.canvasElements.image.left + this.canvasElements.image.width,
-    y2: this.canvasElements.image.top + this.canvasElements.image.height
+    x1: this.canvasElements.image.getBoundingRect().left,
+    y1: this.canvasElements.image.getBoundingRect().top,
+    x2: this.canvasElements.image.getBoundingRect().left + this.canvasElements.image.getBoundingRect().width,
+    y2: this.canvasElements.image.getBoundingRect().top + this.canvasElements.image.getBoundingRect().height
   }
 }
 
@@ -398,46 +393,27 @@ ImageRazor.prototype.toolBoxHandlerEffectGrayscale = function() {
 ImageRazor.prototype.rotateImage = function(direction) {
   direction = direction || -1;
 
+  var angle = this.canvasElements.image.getAngle() + 90 * direction,
+      scale,
+      boundingRect,
+      newCropAreaSize;
 
-  var data;
+  // rotate Image and get new scale
+  this.canvasElements.image.setAngle(angle).setCoords();
+  boundingRect = this.canvasElements.image.getBoundingRect();
+  scale = this.getImageScale(boundingRect.width, boundingRect.height).x * this.canvasElements.image.getScaleX();
 
-  // hide crop area
-  this.canvasElements.cropArea.hide();
+  // set new scale and render image
+  this.canvasElements.image.setScaleX(scale).setScaleY(scale).center().setCoords();
 
-  data = this.canvas.toDataURL({
-    left: this.canvasElements.image.left,
-    top: this.canvasElements.image.top,
-    width: this.canvasElements.image.width,
-    height: this.canvasElements.image.height,
-    multiplier: this.srcImageSize.width/this.canvasElements.image.width
-  });
 
-  var _this = this,
-      canvas = document.createElement('canvas'),
-      ctx = canvas.getContext("2d"),
-      img = new Image();;
+  // set cropping area size
+  newCropAreaSize = this.calcCropAreaSize();
+  this.canvasElements.cropArea.setWidth(newCropAreaSize.width).setHeight(newCropAreaSize.height).center().setCoords();
+  this.canvasElements.cropArea.restrict = this.getRestrictCropArea();
 
-  img.onload = function() {
-    canvas.setAttribute('width', img.height);
-    canvas.setAttribute('height', img.width);
 
-    ctx.translate(canvas.width/2, canvas.height/2);
-    ctx.rotate(90 * direction * Math.PI/180);
-
-    ctx.drawImage(img, -img.width/2, -img.height/2);
-
-    var exportData = canvas.toDataURL();
-    _this.options.src = exportData;
-
-    // clear canvas
-    _this.canvas.clear();
-
-    // re-init canvas elements
-    _this.initCanvasElements();
-
-  };
-
-  img.src = data;
+  this.canvas.renderAll();
 }
 
 
@@ -464,9 +440,9 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
     options.hasBorders = false;
     this.callSuper('initialize', options);
 
-    var restrict = options.restrict;
+    this.restrict = options.restrict;
 
-    if (restrict) {
+    if (this.restrict) {
       this.on('moving', function() {
 
         var x1 = this.getLeft(),
@@ -474,20 +450,20 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
           x2 = x1 + this.getWidth(),
           y2 = y1 + this.getHeight();
 
-        if (x1 < restrict.x1) {
-          this.setLeft(restrict.x1);
+        if (x1 < this.restrict.x1) {
+          this.setLeft(this.restrict.x1);
         }
 
-        if (y1 < restrict.y1) {
-          this.setTop(restrict.y1);
+        if (y1 < this.restrict.y1) {
+          this.setTop(this.restrict.y1);
         }
 
-        if (x2 > restrict.x2) {
-          this.setLeft(restrict.x2 - this.getWidth());
+        if (x2 > this.restrict.x2) {
+          this.setLeft(this.restrict.x2 - this.getWidth());
         }
 
-        if (y2 > restrict.y2) {
-          this.setTop(restrict.y2 - this.getHeight());
+        if (y2 > this.restrict.y2) {
+          this.setTop(this.restrict.y2 - this.getHeight());
         }
       });
 
@@ -507,28 +483,28 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
 
 
 
-        if (x1 < restrict.x1) {
-          var deltaX = restrict.x1 - x1;
+        if (x1 < this.restrict.x1) {
+          var deltaX = this.restrict.x1 - x1;
 
-          this.setLeft(restrict.x1);
+          this.setLeft(this.restrict.x1);
           this.setWidth(this.width - deltaX);
         }
 
-        if (y1 < restrict.y1) {
-          var deltaY = restrict.y1 - y1;
+        if (y1 < this.restrict.y1) {
+          var deltaY = this.restrict.y1 - y1;
 
-          this.setTop(restrict.y1);
+          this.setTop(this.restrict.y1);
           this.setHeight(this.height - deltaY);
         }
 
-        if (x2 > restrict.x2) {
-          var deltaX = x2 - restrict.x2;
+        if (x2 > this.restrict.x2) {
+          var deltaX = x2 - this.restrict.x2;
 
           this.setWidth(this.width - deltaX);
         }
 
-        if (y2 > restrict.y2) {
-          var deltaY = y2 - restrict.y2;
+        if (y2 > this.restrict.y2) {
+          var deltaY = y2 - this.restrict.y2;
 
           this.setHeight(this.height - deltaY);
         }
