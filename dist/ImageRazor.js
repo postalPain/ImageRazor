@@ -236,7 +236,7 @@ ImageRazor.prototype.saveToDataURL = function() {
   if (typeof this.options.imageSize == 'object') {
     multiplier = Math.round(1000*this.options.imageSize.width/this.canvasElements.image.getBoundingRect().width)/1000;
   } else if (this.options.imageSize == 'original') {
-    multiplier = this.canvasElements.image.getScaleX();
+    multiplier = 1 / this.canvasElements.image.getScaleX();
   } else {
     multiplier = 1;
   }
