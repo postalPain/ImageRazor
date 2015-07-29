@@ -155,7 +155,6 @@ ImageRazor.prototype.canvasAddImage = function(callback) {
     oImg.setScaleX(scale.x).setScaleY(scale.y).center().setCoords().moveTo(-1);
     oImg.evented = false;
 
-
     _this.canvasElements.image = oImg;
 
     callback();
@@ -216,12 +215,12 @@ ImageRazor.prototype.calcCropAreaSize = function() {
 
   if (imgWidthOnCanvas != this.canvas.width) {
     width = imgWidthOnCanvas;
-    height = Math.round((this.options.imageSize.height / this.options.imageSize.width) * width);
+    height = (this.options.imageSize.height / this.options.imageSize.width) * width;
   } else {
     height = imgHeightOnCanvas;
-    width = Math.round((this.options.imageSize.width / this.options.imageSize.height) * height);
+    width = (this.options.imageSize.width / this.options.imageSize.height) * height;
   }
-console.log(width, height);
+
   return {
     width: width,
     height: height
@@ -235,7 +234,7 @@ ImageRazor.prototype.saveToDataURL = function() {
 
   // set multiplier
   if (typeof this.options.imageSize == 'object') {
-    multiplier = this.options.imageSize.width/this.canvasElements.image.getBoundingRect().width;
+    multiplier = Math.round(1000*this.options.imageSize.width/this.canvasElements.image.getBoundingRect().width)/1000;
   } else if (this.options.imageSize == 'original') {
     multiplier = this.canvasElements.image.getScaleX();
   } else {
@@ -533,17 +532,18 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
 
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
 
-    // Upper rect
-    ctx.fillRect(x1, y1, x4, y2);
 
-    // Bottom rect
-    ctx.fillRect(x1, y3, x4, y4-y3);
+    ctx.beginPath();
 
-    // Left rect
-    ctx.fillRect(x1, y2, x2-x1, y3-y2);
+    // substracted window
+    ctx.moveTo(x2, y2);
+    ctx.rect(x2-this.borderWidth, y2, x3-x2+this.borderWidth*2, y3-y2+this.borderWidth*2);
 
-    // Right rect
-    ctx.fillRect(x3, y2, x4-x3, y3-y2);
+    // gray screen
+    ctx.moveTo(x4, y1);
+    ctx.rect(x4, y1, -x4, y4);
+
+    ctx.fill();
 
 
     // draw borders
@@ -554,7 +554,7 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
     this.drawDashLine(x2, y2, x2, y3, ctx);
     this.drawDashLine(x2, y3, x3, y3, ctx);
     this.drawDashLine(x3, y3, x3, y2, ctx);
-    this.drawDashLine(x3, y2, x2, y2, ctx);
+    this.drawDashLine(x3, y2+this.borderWidth, x2, y2+this.borderWidth, ctx);
     ctx.stroke();
 
 
