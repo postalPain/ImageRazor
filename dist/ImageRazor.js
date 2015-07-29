@@ -537,7 +537,7 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
 
     // substracted window
     ctx.moveTo(x2, y2);
-    ctx.rect(x2-this.borderWidth, y2, x3-x2+this.borderWidth*2, y3-y2+this.borderWidth*2);
+    ctx.rect(x2-this.borderWidth, y2, x3-x2+this.borderWidth, y3-y2+this.borderWidth);
 
     // gray screen
     ctx.moveTo(x4, y1);
@@ -556,7 +556,6 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
     this.drawDashLine(x3, y3, x3, y2, ctx);
     this.drawDashLine(x3, y2+this.borderWidth, x2, y2+this.borderWidth, ctx);
     ctx.stroke();
-
 
     ctx.restore();
   },
