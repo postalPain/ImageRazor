@@ -234,15 +234,17 @@ ImageRazor.prototype.saveToDataURL = function() {
 
   // set multiplier
   if (typeof this.options.imageSize == 'object') {
-    multiplier = Math.round(1000*this.options.imageSize.width/this.canvasElements.image.getBoundingRect().width)/1000;
+    multiplier = this.options.imageSize.width/this.canvasElements.cropArea.getWidth();
   } else if (this.options.imageSize == 'original') {
     multiplier = 1 / this.canvasElements.image.getScaleX();
   } else {
     multiplier = 1;
   }
 
+
   // hide crop area
   this.canvasElements.cropArea.hide();
+  this.canvas.backgroundColor = 'rgba(0,0,0,0)';
 
   data = this.canvas.toDataURL({
         left: this.canvasElements.cropArea.left,
