@@ -70,6 +70,8 @@
     background: #0f0f0f;
     cursor: pointer; }
   .image-razor-toolbox-item.icon-eye {
+    color: #fff; }
+  .image-razor-toolbox-item.icon-eye.active {
     color: #939393; }
   .image-razor-toolbox-item.icon-done {
     color: #008000;

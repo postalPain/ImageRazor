@@ -313,7 +313,7 @@ ImageRazor.prototype.handleToolsBox = function(e) {
   var name = e.target.getAttribute('data-name'),
       handler = 'toolBoxHandler' + name;
 
-  this[handler]();
+  this[handler](e);
 }
 
 // close Image Razor
@@ -356,14 +356,17 @@ ImageRazor.prototype.toolBoxHandlerRotateCWise = function() {
 ImageRazor.prototype.toolBoxHandlerRotateCCWise = function() {
   this.rotateImage(-1);
 }
-ImageRazor.prototype.toolBoxHandlerEffectGrayscale = function() {
+ImageRazor.prototype.toolBoxHandlerEffectGrayscale = function(e) {
 
   // add filter
   if (this.canvasElements.image.filters.length == 0) {
     this.canvasElements.image.filters.push(new fabric.Image.filters.Grayscale());
+    e.target.className = e.target.className + ' active';
   } else {
     this.canvasElements.image.filters.pop();
+    e.target.className = e.target.className.replace(/(\s)*active/gi, '');
   }
+
 
   // apply filters and re-render canvas when done
   this.canvasElements.image.applyFilters(this.canvas.renderAll.bind(this.canvas));
@@ -388,10 +391,15 @@ ImageRazor.prototype.rotateImage = function(direction) {
   this.canvasElements.image.setScaleX(scale).setScaleY(scale).center().setCoords();
 
 
-  // set cropping area size
-  newCropAreaSize = this.calcCropAreaSize();
-  this.canvasElements.cropArea.setWidth(newCropAreaSize.width).setHeight(newCropAreaSize.height).center().setCoords();
-  this.canvasElements.cropArea.restrict = this.getRestrictCropArea();
+  // set cropping area size if specified specific
+  if (typeof this.options.imageSize == 'object') {
+    newCropAreaSize = this.calcCropAreaSize();
+    this.canvasElements.cropArea.setWidth(newCropAreaSize.width).setHeight(newCropAreaSize.height).center().setCoords();
+    this.canvasElements.cropArea.restrict = this.getRestrictCropArea();
+  } else {
+    this.canvasElements.cropArea.center().setCoords();
+    this.canvasElements.cropArea.restrict = this.getRestrictCropArea();
+  }
 
 
   this.canvas.renderAll();
@@ -534,7 +542,7 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
 
     // substracted window
     ctx.moveTo(x2, y2);
-    ctx.rect(x2-this.borderWidth, y2, x3-x2+this.borderWidth, y3-y2+this.borderWidth);
+    ctx.rect(x2, y2, x3-x2, y3-y2);
 
     // gray screen
     ctx.moveTo(x4, y1);
@@ -548,7 +556,7 @@ fabric.cropArea = fabric.util.createClass(fabric.Rect, {
     ctx.lineWidth = this.borderWidth;
 
     ctx.beginPath();
-    this.drawDashLine(x2, y2, x2, y3, ctx);
+    this.drawDashLine(x2+this.borderWidth, y2, x2+this.borderWidth, y3, ctx);
     this.drawDashLine(x2, y3, x3, y3, ctx);
     this.drawDashLine(x3, y3, x3, y2, ctx);
     this.drawDashLine(x3, y2+this.borderWidth, x2, y2+this.borderWidth, ctx);
