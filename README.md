@@ -14,19 +14,70 @@ Using Bower:
 
     bower install ImageRazor
 
-Or grab the [source](https://github.com/postalPain/ImageRazor/dist/ImageRazor.js) ([minified](https://github.com/postalPain/ImageRazor/dist/ImageRazor.min.js)).
+Or grab the [source](https://github.com/postalPain/ImageRazor/dist).
 
 ## Usage
 
 Basic usage is as follows:
 
-    ImageRazor();
+    ImageRazor({
+        wrapper: '#image-razor',
+        src: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Benz-velo.jpg',
+        saveCallback: function(data) {
+          var preview = document.getElementById('image-preview');
+          preview.src = data;
+       }
+    });
 
-For advanced usage, see the documentation.
+##### Options:
+wrapper (required) 
+    
+    query selector of the DOM Element where to place editor
 
-## Documentation
+src (required)
 
-Start with `docs/MAIN.md`.
+    image source, could be 'url' or 'dataURL'
+    
+imageSize - the size of the result image
+    
+    /* Default value. Image will be cropped by manually-specified crop area without scaling, as it is. */
+    imageSize = 'asItIs'; 
+    
+    /* image will be cropped by manually-specified crop area and scaled in proportion to original image */
+    imageSize = 'original'; 
+    
+    /* image will be cropped by specified crop area and scaled to specified dimensions 
+    imageSize = {
+      width: 200,
+      height: 150
+    }
+ 
+ format
+ 
+    Resulting image format. Default is 'dataURL'. Possible to specify 'binary' format. 
+
+saveCallback
+
+    Callback function with resulting image data.
+    
+cancelCallback
+
+    Callback function on reject editing image.
+
+editor
+    
+    {
+      width: 400, // width of editor
+      height: 300, // height of editor
+      backgroundColor: '#000', // background color of the canvas
+      cropAreaBorderColor: '#A5A5A5', 
+      cropAreaBorderWidth: 1,
+      cropAreaBorderDashStep: 7,
+      cropAreaSize: { // define initial crop area size (imageSize == 'asItIs' || 'original')
+        width: 200,
+        height: 200
+      }
+    }
 
 ## Contributing
 
