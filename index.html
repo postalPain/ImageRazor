@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ImageRazor demo</title>
+    <link rel="stylesheet" href="./assets/normalize.css" />
+    <link rel="stylesheet" href="./assets/main.css" />
+    <link rel="stylesheet" href="./dist/styles/imagerazor.css" />
+    <style>
+      /* begin demo embedded styles */
+
+      /* end demo embedded styles */
+    </style>
+  </head>
+  <body>
+    <h1>ImageRazor demo</h1>
+
+    <!-- begin demo markup -->
+    <div id="image-razor"></div>
+    <div>
+        <img id="image-preview" />
+    </div>
+    <a id="image-razor-caller">Call Image Razor</a>
+    <!-- end demo markup -->
+
+    <p>See the <a href="http://postalPain.github.io/ImageRazor">project homepage</a>.
+    <p>Check out the <a href="https://github.com/postalPain/ImageRazor">project repo</a>.
+    <p>Copyright 2015 Pavel Lapin</p>
+
+    <script src="./bower_components/fabric/dist/fabric.js"></script>
+    <script src="./dist/ImageRazor.js"></script>
+
+    <script type="text/javascript">
+      /* begin demo script */
+
+      var button = document.getElementById('image-razor-caller'),
+          body = document.getElementsByTagName('body')[0];
+      button.addEventListener('click', function() {
+          var n = new ImageRazor({
+              wrapper: '#image-razor',
+              src: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Benz-velo.jpg',
+              imageSize: {
+                  width: 600,
+                  height: 400
+              },
+              saveCallback: function(data) {
+                  var preview = document.getElementById('image-preview');
+                  preview.src = data;
+                  delete window.n;
+              }
+          });
+
+          body.removeChild(button);
+      });
+
+      button.click();
+
+
+      /* end demo script */
+    </script>
+  </body>
+</html>
