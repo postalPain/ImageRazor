@@ -1,10 +1,10 @@
 # ImageRazor
 
-Image editor, based on FabricJS library. Main  
+Simple image editor, based on FabricJS library. It allowes you to apply 'grayscale' filter, rotate and crop image according to setted dimensions. Receive result in dataURL or binary format.
 
 ## About
 
-A JavaScript library by Pavel Lapin.
+A JavaScript image cropping editor by Pavel Lapin.
 
 See the [project homepage](http://postalPain.github.io/ImageRazor).
 
